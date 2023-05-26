@@ -6,22 +6,22 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-recipe-deployment
+  name: api-order-deployment
   namespace: cookeasy
   labels:
-    app: api-recipe
+    app: api-order
 spec:
   selector:
     matchLabels:
-      app: api-recipe
+      app: api-order
   template:
     metadata:
       labels:
-        app: api-recipe
+        app: api-order
     spec:
       containers:
-        - name: api-recipe
-          image: haingue/api-recipe:arm64
+        - name: api-order
+          image: haingue/api-order:arm64
           imagePullPolicy: "Always"
           ports:
             - containerPort: 8080
@@ -33,13 +33,13 @@ spec:
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: api-recipe-scale
+  name: api-order-scale
   namespace: cookeasy
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: api-recipe-deployment
+    name: api-order-deployment
   minReplicas: 1
   maxReplicas: 3
   metrics:
@@ -56,7 +56,7 @@ spec:
         describedObject:
           apiVersion: networking.k8s.io/v1beta1
           kind: Ingress
-          name: api-recipe-ingress
+          name: api-order-ingress
         target:
           type: Value
           value: 500
@@ -64,33 +64,33 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-recipe-service
+  name: api-order-service
   namespace: cookeasy
   labels:
-    app: api-recipe
+    app: api-order
 spec:
   ports:
     - port: 8080
       protocol: TCP
   selector:
-    app: api-recipe
+    app: api-order
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-recipe-ingress
+  name: api-order-ingress
   namespace: cookeasy
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: api-recipe.haingue.com
+    - host: api-order.haingue.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: api-recipe-service
+                name: api-order-service
                 port:
                   number: 8080
